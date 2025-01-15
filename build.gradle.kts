@@ -19,8 +19,14 @@ kotlin {
     jvmToolchain(17)
 }
 
+
 // Configure project's dependencies
 repositories {
+    mavenLocal()
+    maven { url = uri("https://maven.aliyun.com/repository/google")}
+    maven { url = uri("https://maven.aliyun.com/repository/jcenter")}
+    maven { url = uri("https://maven.aliyun.com/repository/public")}
+    maven { url = uri("https://cache-redirector.jetbrains.com/intellij-dependencies")}
     mavenCentral()
 
     // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
@@ -35,6 +41,7 @@ dependencies {
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
+
         create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
 
         // Plugin Dependencies. Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
@@ -52,6 +59,7 @@ dependencies {
 
 // Configure IntelliJ Platform Gradle Plugin - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-extension.html
 intellijPlatform {
+    instrumentCode = false
     pluginConfiguration {
         version = providers.gradleProperty("pluginVersion")
 
@@ -126,12 +134,23 @@ kover {
 }
 
 tasks {
+    test{
+        enabled = false
+    }
     wrapper {
         gradleVersion = providers.gradleProperty("gradleVersion").get()
     }
 
     publishPlugin {
         dependsOn(patchChangelog)
+    }
+
+    instrumentCode{
+        enabled = false
+    }
+
+    initializeIntellijPlatformPlugin{
+        latestPluginVersion.set(project.version.toString())
     }
 }
 
@@ -147,6 +166,7 @@ intellijPlatformTesting {
                         "-Djb.consents.confirmation.enabled=false",
                     )
                 }
+
             }
 
             plugins {

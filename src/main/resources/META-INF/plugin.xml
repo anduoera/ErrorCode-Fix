@@ -1,18 +1,69 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>org.jetbrains.plugins.template</id>
-    <name>IntelliJ Platform Plugin Template</name>
-    <vendor>JetBrains</vendor>
+    <id>com.github.anduoera.errorcodefix</id>
+    <name>ErrorCode-Fix</name>
+    <vendor>anduoera</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>org.jetbrains.plugins.go</depends>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
+     <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="com.github.anduoera.errorcodefix.listeners.ProjectStartupListeners"/>
+         <completion.contributor implementationClass="com.github.anduoera.errorcodefix.languages.BindingCompletionContributor" language="go"/>
+         <completion.contributor implementationClass="com.github.anduoera.errorcodefix.languages.ErrorCodeGenerateCompletionContributor" language="go"/>
+         <completion.contributor implementationClass="com.github.anduoera.errorcodefix.languages.ErrorCodeGenerateFuncCompletionContributor" language="go"/>
+         <applicationService serviceImplementation="com.github.anduoera.errorcodefix.setting.ParamValidationAppSettings"/>
+         <applicationService serviceImplementation="com.github.anduoera.errorcodefix.setting.ErrorCodeGenerateAppSettings"/>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="org.jetbrains.plugins.template.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+         <lang.documentationProvider language="go" implementationClass="com.github.anduoera.errorcodefix.languages.BindingDocumentationProvider"/>
+
+
+         <projectConfigurable
+            parentId="tool"
+            id="com.github.anduoera.errorcodefix.setting.ErrorCodeFixConfigurable"
+            displayName="ErrorCode Fix"
+            nonDefaultProject="true"
+            instance="com.github.anduoera.errorcodefix.setting.ErrorCodeFixConfigurable"
+         >
+            <configurable
+                    id="com.github.anduoera.errorcodefix.setting.ParamValidationAppSettingsConfigurable"
+                    displayName="Validation Settings"
+                    nonDefaultProject="true"
+                    instance="com.github.anduoera.errorcodefix.setting.ParamValidationAppSettingsConfigurable"
+            />
+
+             <configurable
+                     id="com.github.anduoera.errorcodefix.setting.ErrorCodeGenerateAppSettingsConfigurable"
+                     displayName="ErrorCode Generate"
+                     nonDefaultProject="true"
+                     instance="com.github.anduoera.errorcodefix.setting.ErrorCodeGenerateAppSettingsConfigurable"
+             />
+         </projectConfigurable>
     </extensions>
+    
+    <projectListeners>
+        <listener class="com.github.anduoera.errorcodefix.listeners.ErrorCodeFileSwitchListener" topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+        <listener class="com.github.anduoera.errorcodefix.listeners.ErrorCodeFileSaveListener" topic="com.intellij.openapi.fileEditor.FileDocumentManagerListener"/>
+    </projectListeners>
 
     <applicationListeners>
-        <listener class="org.jetbrains.plugins.template.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+        <listener class="com.github.anduoera.errorcodefix.listeners.MyAppLifecycleListener" topic="com.intellij.ide.AppLifecycleListener"/>
     </applicationListeners>
+
+    <actions>
+        <group
+                id="org.intellij.sdk.action.ErrorCodeFix"
+                text="ErrorCode Fix"
+                popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+
+            <action class="com.github.anduoera.errorcodefix.actions.ErrorCodeGenerateAction"
+                    id="com.github.anduoera.errorcodefix.actions.ErrorCodeGenerateAction"
+                    text="ErrorCode Generate"
+                    description="ErrorCode generate">
+                <keyboard-shortcut keymap="$default" first-keystroke="shift alt E"/>
+            </action>
+        </group>
+    </actions>
+
 </idea-plugin>
