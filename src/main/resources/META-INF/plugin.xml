@@ -15,7 +15,8 @@
          <applicationService serviceImplementation="com.github.anduoera.errorcodefix.setting.ParamValidationAppSettings"/>
          <applicationService serviceImplementation="com.github.anduoera.errorcodefix.setting.ErrorCodeGenerateAppSettings"/>
 
-
+         <platform.backend.documentation.targetProvider implementation="com.github.anduoera.errorcodefix.languages.BindingPsiDocumentationTargetProvider"
+                                                        id="com.github.anduoera.errorcodefix.languages.BindingPsiDocumentationTargetProvider"/>
          <projectConfigurable
             parentId="tool"
             id="com.github.anduoera.errorcodefix.setting.ErrorCodeFixConfigurable"

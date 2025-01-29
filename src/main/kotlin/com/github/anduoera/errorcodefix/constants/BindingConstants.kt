@@ -191,6 +191,10 @@ class AKBindingRuleConstants private constructor() {
             println("Invalid URL or other error: ${e.message}")
         }
     }
+
+    fun containsKey(key: String): Boolean {
+        return bindingRulesMap.containsKey(key)
+    }
 }
 
 
