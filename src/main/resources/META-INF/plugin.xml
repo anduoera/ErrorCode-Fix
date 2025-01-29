@@ -15,8 +15,6 @@
          <applicationService serviceImplementation="com.github.anduoera.errorcodefix.setting.ParamValidationAppSettings"/>
          <applicationService serviceImplementation="com.github.anduoera.errorcodefix.setting.ErrorCodeGenerateAppSettings"/>
 
-         <lang.documentationProvider language="go" implementationClass="com.github.anduoera.errorcodefix.languages.BindingDocumentationProvider"/>
-
 
          <projectConfigurable
             parentId="tool"
