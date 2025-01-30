@@ -1,5 +1,7 @@
 package com.github.anduoera.errorcodefix.languages
 
+import com.github.anduoera.errorcodefix.constants.AKBindingRuleConstants
+import com.github.anduoera.errorcodefix.constants.DEFAULT_RULE_BINDING
 import com.intellij.model.Pointer
 import com.intellij.platform.backend.documentation.DocumentationTarget
 import com.intellij.platform.backend.presentation.TargetPresentation
@@ -16,12 +18,45 @@ class BuildingDocumentationTarget(
     private val remark: String,
     private val isDefault: Boolean
 ) : DocumentationTarget {
+    private val aKBindingRule by lazy { AKBindingRuleConstants.instance }
 
     override fun computeDocumentation(): DocumentationResult {
 
         val (patternColor, patternBg) = when (validatorPattern) {
             "regexp" -> "#007acc" to "#e6f7ff"  // 蓝色主题
             else -> "#d32f2f" to "#ffebee"      // 红色主题
+        }
+
+        val alias = when (validatorPattern) {
+            "alias" -> {
+                var str = ""
+                val tags = validatorValue.split(Regex("[,，]"))
+                tags.forEach {
+                    if (it.isEmpty()) return@forEach
+                    var tagKey = it.trim()
+                    if (tagKey.contains("=")) {
+                        if (tagKey.split("=").size > 1) {
+                            tagKey = tagKey.split("=")[0]
+                        }
+                    }
+
+                    if (DEFAULT_RULE_BINDING.containsKey(tagKey)) {
+                        val remarkStr = DEFAULT_RULE_BINDING[tagKey]
+                        str += """<div class="childrenTag">$tagKey:$remarkStr</div>"""
+                        return@forEach
+                    }
+
+                    if (aKBindingRule.containsKey(tagKey)) {
+                        val remarkStr = aKBindingRule.getRule(tagKey).remark
+                        str += """<div class="childrenTag">$tagKey:$remarkStr</div>"""
+                        return@forEach
+                    }
+                }
+
+                str
+            }
+
+            else -> ""
         }
 
         var documentationText = """
@@ -51,6 +86,10 @@ class BuildingDocumentationTarget(
                         font-size: 11px;
                         margin-top: 8px;
                     }
+                    .childrenTag {
+                        color: gray;
+                        font-size: 10px;
+                    }
 					.value{
                         margin-top: 8px;
                         font-size: 13px;
@@ -61,6 +100,7 @@ class BuildingDocumentationTarget(
                 <div class="key">$paramName</div>
                 <div class="tag">$validatorPattern</div>
                 <div class="value">$validatorValue</div>
+                $alias
                 <div class="remark">$remark</div>
             </body>
         </html>
