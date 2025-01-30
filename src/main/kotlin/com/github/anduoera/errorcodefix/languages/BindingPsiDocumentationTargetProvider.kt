@@ -100,7 +100,10 @@ fun extractBindingValues(input: String): List<String> {
 
 fun getNearestOffsetFromString(tagElement: PsiElement, tags: List<String>, offset: Int): String {
     val tagText = tagElement.text
+
     val tagStartOffset = tagElement.startOffset
+
+    if (tagElement.startOffset + (tagText.indexOf("binding:") + 7) > offset) return ""
 
     var nearestTag: String? = null
     var minDistance = Int.MAX_VALUE
