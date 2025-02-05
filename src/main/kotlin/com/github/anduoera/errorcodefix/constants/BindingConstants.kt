@@ -158,6 +158,7 @@ class AKBindingRuleConstants private constructor() {
     fun flushedBySettingUri(uri: String) {
         try {
             val connection = URL(uri).openConnection() as HttpURLConnection
+            connection.connectTimeout = 1000
             connection.requestMethod = "GET"
             try {
                 val responseCode = connection.responseCode
