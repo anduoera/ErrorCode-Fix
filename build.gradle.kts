@@ -23,10 +23,10 @@ kotlin {
 // Configure project's dependencies
 repositories {
     mavenLocal()
-    maven { url = uri("https://maven.aliyun.com/repository/google")}
-    maven { url = uri("https://maven.aliyun.com/repository/jcenter")}
-    maven { url = uri("https://maven.aliyun.com/repository/public")}
-    maven { url = uri("https://cache-redirector.jetbrains.com/intellij-dependencies")}
+    maven { url = uri("https://maven.aliyun.com/repository/google") }
+    maven { url = uri("https://maven.aliyun.com/repository/jcenter") }
+    maven { url = uri("https://maven.aliyun.com/repository/public") }
+    maven { url = uri("https://cache-redirector.jetbrains.com/intellij-dependencies") }
     mavenCentral()
 
     // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
@@ -38,7 +38,7 @@ repositories {
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
     testImplementation(libs.junit)
-
+    implementation("com.google.code.gson:gson:2.8.9")
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
 
@@ -106,7 +106,8 @@ intellijPlatform {
         // The pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
         // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
         // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
-        channels = providers.gradleProperty("pluginVersion").map { listOf(it.substringAfter('-', "").substringBefore('.').ifEmpty { "default" }) }
+        channels = providers.gradleProperty("pluginVersion")
+            .map { listOf(it.substringAfter('-', "").substringBefore('.').ifEmpty { "default" }) }
     }
 
     pluginVerification {
@@ -134,7 +135,7 @@ kover {
 }
 
 tasks {
-    test{
+    test {
         enabled = false
     }
     wrapper {
@@ -145,13 +146,19 @@ tasks {
         dependsOn(patchChangelog)
     }
 
-    instrumentCode{
+    instrumentCode {
         enabled = false
     }
 
-    initializeIntellijPlatformPlugin{
+    initializeIntellijPlatformPlugin {
         latestPluginVersion.set(project.version.toString())
     }
+
+    buildPlugin {
+        dependsOn(configurations.runtimeClasspath)
+    }
+
+
 }
 
 intellijPlatformTesting {

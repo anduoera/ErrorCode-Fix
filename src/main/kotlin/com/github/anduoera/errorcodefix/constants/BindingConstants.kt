@@ -1,6 +1,7 @@
 package com.github.anduoera.errorcodefix.constants
 
-import org.codehaus.jettison.json.JSONArray
+import com.google.gson.JsonArray
+import com.google.gson.JsonParser
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.ArrayList
@@ -166,16 +167,16 @@ class AKBindingRuleConstants private constructor() {
                     bindingRulesMap.clear()
                     val response = connection.inputStream.bufferedReader().use { it.readText() }
                     println(response)
-                    val jsonArray = JSONArray(response)
-                    for (i in 0 until jsonArray.length()) {
-                        val jsonObject = jsonArray.getJSONObject(i)
-                        val paramName = jsonObject.getString("param_name")
+                    val jsonArray: JsonArray = JsonParser.parseString(response).asJsonArray
+                    for (jsonElement in jsonArray) {
+                        val jsonObject = jsonElement.asJsonObject
+                        val paramName = jsonObject.get("param_name").asString
 
                         val rule = BindingRule(
                             paramName = paramName,
-                            validatorPattern = jsonObject.getString("validator_pattern"),
-                            validatorValue = jsonObject.getString("validator_value"),
-                            remark = jsonObject.getString("remark")
+                            validatorPattern = jsonObject.get("validator_pattern").asString,
+                            validatorValue = jsonObject.get("validator_value").asString,
+                            remark = jsonObject.get("remark").asString
                         )
 
                         bindingRulesMap[paramName] = rule

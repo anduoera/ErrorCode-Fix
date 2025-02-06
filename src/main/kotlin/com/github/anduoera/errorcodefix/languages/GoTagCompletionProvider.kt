@@ -30,11 +30,13 @@ class GoTagCompletionProvider : CompletionProvider<CompletionParameters>() {
                         .withPresentableText(tag)
                         .withInsertHandler { context, item ->
                             var insertStr = tag
+                            var startOffset = context.startOffset - 1
                             if (!element.text.contains("binding:")) {
                                 insertStr = "binding:\"$tag\""
+                                startOffset += 1
                             }
                             context.document.replaceString(
-                                context.startOffset,
+                                startOffset,
                                 context.tailOffset,
                                 insertStr
                             )
@@ -58,11 +60,13 @@ class GoTagCompletionProvider : CompletionProvider<CompletionParameters>() {
                     .withItemTextForeground(textColor)
                     .withInsertHandler { context, item ->
                         var insertStr = tag
+                        var startOffset = context.startOffset - 1
                         if (!element.text.contains("binding:")) {
                             insertStr = "binding:\"$tag\""
+                            startOffset += 1
                         }
                         context.document.replaceString(
-                            context.startOffset,
+                            startOffset,
                             context.tailOffset,
                             insertStr
                         )

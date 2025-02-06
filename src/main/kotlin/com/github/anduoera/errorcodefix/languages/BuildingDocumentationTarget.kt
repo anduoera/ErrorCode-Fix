@@ -70,9 +70,10 @@ class BuildingDocumentationTarget(
                     }
                     .tag {
                         display: inline-block;
+                        width:50px;
+                        text-align:center;
                         font-size: 12px;
                         font-weight: bold;
-                        border-radius: 4px;
                         color: $patternColor;
                         background-color: $patternBg;
                         margin-top: 8px;
